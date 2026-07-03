@@ -16,9 +16,24 @@ Set up the Python environment. Note: Playpen requires Python 3.10+.
 python -m venv venv --system-site-packages && source venv/bin/activate
 ```
 
+### Alternative: set up with uv
+
+If you prefer uv, you can create and use a local virtual environment with:
+
+```bash
+uv venv --python 3.12
+source .venv/bin/activate
+```
+
 Install the requirements, which include the [clemcore](https://github.com/clp-research/clemcore) framework and the libraries to train and evaluate Huggingface models.
 ```bash
 pip install -e .
+```
+
+With uv, the equivalent editable install is:
+
+```bash
+uv pip install -e .
 ```
 
 Import then the [clembench](https://github.com/clp-research/clembench) repository in a directory of your choice and install its requirements. This will make the game environments available for training and evaluation.
@@ -49,11 +64,49 @@ If you are interested in running the provided training examples, you should inst
 pip install '.[trl]'
 ```
 
+With uv:
+
+```bash
+uv pip install -e '.[trl]'
+```
+
+If you want to experiment with [verl](https://github.com/volcengine/verl), install the optional `verl` extra.
+```bash
+pip install '.[verl]'
+```
+
+With uv:
+
+```bash
+uv pip install -e '.[verl]'
+```
+
 Furthermore, if you want to run the prepared trainers in `examples/trl` with local huggingface models, you should install the `huggingface` extra. If you do not want this, you can still use the `trl` extra to run the trainers with remote models.
 ```bash
 pip install 'clemcore[huggingface]'
 ```
+
+With uv:
+
+```bash
+uv pip install 'clemcore[huggingface]'
+```
 Note: If you want to use the `transformers` library directly, you cannot use the playpen CLI to run the trainers, but you have to run your own scripts.
+
+### Optional: uv lock workflow
+
+If you want reproducible dependency resolution with uv, generate a lock file once and sync from it:
+
+```bash
+uv lock
+uv sync
+```
+
+When dependencies change, regenerate with:
+
+```bash
+uv lock --upgrade
+```
 
 Now that everything is set up, you may follow the next steps to enter deeper into how to train and evaluate a model.
 # Evaluate a model
@@ -275,8 +328,56 @@ playpen eval Llama-3.1-8B-Instruct-sft-lora
 
 Reinforcement Learning is a very interesting approach for training models on interactive tasks. Compared to Supervised Finetuning, it has the advantage of having a model learning from direct experience rather than by imitating other models' gameplay.
 
-Clemcore relies on [OpenEnv](https://github.com/meta-pytorch/OpenEnv) to transform games into RL environments ready for training. 
-OpenEnv adopts a Gymnasium-style API interface, and this should facilitate RL practitioners. We invite you however to have a look at the library.
+### GRPO with verl
+
+The fastest way to run GRPO training from the CLI is with the built-in [verl](https://github.com/volcengine/verl) trainer.
+
+**1. Install the verl extra**
+
+```bash
+pip install -e '.[verl]'
+```
+
+**2. Prepare training data**
+
+VERL expects local parquet files with a `prompt` column containing the chat messages for each training example.
+The snippet below downloads the `playpen-data` interactions split and converts it to the required format:
+
+```python
+from datasets import load_dataset
+
+ds = load_dataset("colab-potsdam/playpen-data", "interactions")
+
+def to_verl(example):
+    return {"prompt": example["messages"]}
+
+import os; os.makedirs("data/verl", exist_ok=True)
+for split in ["train", "test"]:
+    ds[split].map(to_verl, remove_columns=ds[split].column_names).to_parquet(f"data/verl/{split}.parquet")
+```
+
+**3. Run GRPO training**
+
+```bash
+PLAYPEN_VERL_TRAIN_FILE=data/verl/train.parquet \
+PLAYPEN_VERL_VAL_FILE=data/verl/test.parquet \
+playpen run examples/verl/grpo_trainer_template.py -l Llama-3.1-8B-Instruct
+```
+
+To train with LoRA adapters instead of full fine-tuning, add `PLAYPEN_VERL_LORA_RANK`:
+
+```bash
+PLAYPEN_VERL_TRAIN_FILE=data/verl/train.parquet \
+PLAYPEN_VERL_VAL_FILE=data/verl/test.parquet \
+PLAYPEN_VERL_LORA_RANK=16 \
+playpen run examples/verl/grpo_trainer_template.py -l Llama-3.1-8B-Instruct
+```
+
+See [examples/verl](./examples/verl/) for the full list of configuration options and the environment variable reference.
+
+### GRPO with a custom rollout loop (OpenEnv)
+
+For more control over the rollout — for example to implement multi-turn game-playing agents — Clemcore relies on [OpenEnv](https://github.com/meta-pytorch/OpenEnv) to expose games as Gymnasium-style RL environments.
 
 This [notebook example](./examples/openenv/wordle-trl.ipynb) shows how to train a model with GRPO on the Wordle game with _clemcore_ and _playpen_. 
 You will notice that you will have to define a custom agent and a customized rollout function to play in the game environments.
@@ -346,9 +447,20 @@ playpen run examples/trl/sft_trainer_lora.py -l Llama-3.1-8B-Instruct
 
 This saves only the adapter parameters under a newly created folder at `models/sft+lora/Llama-3.1-8B-Instruct`.
 
-### Running the RL (GRPO) example
+### Running GRPO training with verl
 
-See the notebook at `./examples/openenv/wordle-trl.ipynb` for an example of training with GRPO on the Wordle game using _clemcore_ and _playpen_.
+Prepare parquet data (one-time), then launch with a single command:
+
+```bash
+PLAYPEN_VERL_TRAIN_FILE=data/verl/train.parquet \
+PLAYPEN_VERL_VAL_FILE=data/verl/test.parquet \
+playpen run examples/verl/grpo_trainer_template.py -l Llama-3.1-8B-Instruct
+```
+
+Add `PLAYPEN_VERL_LORA_RANK=16` to use LoRA instead of full fine-tuning.
+See [examples/verl](./examples/verl/) for the data preparation snippet and full configuration reference.
+
+For a hands-on notebook showing GRPO with a custom game rollout loop, see `./examples/openenv/wordle-trl.ipynb`.
 
 ### Generating your own dataset
 

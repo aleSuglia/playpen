@@ -6,6 +6,19 @@ The Playpen is an extension of the [clemcore](https://github.com/clp-research/cl
 
 If you're here just because you find simulating learning from and in interaction interesting just in itself, welcome!, and move on along to [the setup instructions](./SETUP.md)... ... because for now, we have temporarily moved these out of the way, to have a landing page for the [EMNLP 2026 LM-Playschool Workshop](https://lm-playschool.github.io) [Shared Task](https://lm-playschool.github.io/challenge/):
 
+## Optional: verl GRPO Training
+
+Playpen includes a ready-to-run [verl](https://github.com/volcengine/verl) GRPO trainer. Install the extra, prepare your data as parquet, and launch training with a single command:
+
+```bash
+PLAYPEN_VERL_TRAIN_FILE=data/verl/train.parquet \
+PLAYPEN_VERL_VAL_FILE=data/verl/test.parquet \
+playpen run examples/verl/grpo_trainer_template.py -l <model-name>
+```
+
+LoRA training is supported via `PLAYPEN_VERL_LORA_RANK=16`.
+See [SETUP.md](./SETUP.md#grpo-with-verl) for the full quickstart (data prep snippet included) and [examples/verl](./examples/verl/) for the complete configuration reference.
+
 
 # The LM-Playschool Shared Task, 2026 Edition
 

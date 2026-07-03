@@ -21,6 +21,9 @@ trl = [
     "peft>=0.17.0,<1.0.0", # supports LoRA for most MoE model including LLama4 family
     "trl>=0.28.0,<1.0.0"
 ]
+verl = [
+    "verl"
+]
 
 [project.scripts]
 playpen = "playpen.cli:main"
