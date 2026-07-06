@@ -7,23 +7,28 @@ name = "playpen"
 version = "3.7.0" # matches least required clemcore version
 description = "The Playpen Python package to train LLMs interactively in text-based environments."
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.11,<3.13"
 license = { text = "MIT" }
 authors = [
     { name = "Philipp Sadler", email = "first.last@uni-potsdam.de" }
 ]
 dependencies = [
     "clemcore>=3.7.0,<4.0.0",
+    "skyrl[skyrl]",
 ]
 
 [project.optional-dependencies]
-skyrl = [
-    "skyrl>=0.0.1",
-    "skyrl-gym",
-]
 trl = [
     "peft>=0.17.0,<1.0.0", # supports LoRA for most MoE model including LLama4 family
     "trl>=0.28.0,<1.0.0"
+]
+skyrl = [
+    "jaxtyping>=0.2.0",
+    "loguru>=0.7.3",
+    "ray==2.51.1",
+    "skyrl-gym>=0.3.0",
+    "skyrl>=0.0.1",
+    "torchdata>=0.11.0",
 ]
 
 [project.scripts]
@@ -35,3 +40,6 @@ Homepage = "https://github.com/lm-playpen/playpen"
 [tool.setuptools.packages.find]
 where = ["."]
 exclude = ["build", "dist", "venv", "examples", "clembench"]
+
+[tool.uv.sources]
+skyrl = { git = "https://github.com/NovaSky-AI/SkyRL" }

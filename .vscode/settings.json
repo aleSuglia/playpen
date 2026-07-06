@@ -14,7 +14,7 @@
         "**/{*.egg-info,_*cache*,.*cache*,.venv,*.lock}": true,
         "**/{.python-version,py.typed}": true,
         "**/.gitkeep": true,
-        "**/.gitignore": true,
+        "**/.gitignore": false,
         "**/.gitattributes": true,
         ".editorconfig": true,
         ".pre-commit-config.yaml": true,

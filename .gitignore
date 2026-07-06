@@ -21,3 +21,4 @@ model_registry.json
 trainer*.py
 CLAUDE.md
 .aider*
+data/
