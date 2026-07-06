@@ -13,10 +13,14 @@ authors = [
     { name = "Philipp Sadler", email = "first.last@uni-potsdam.de" }
 ]
 dependencies = [
-    "clemcore>=3.7.0,<4.0.0"
+    "clemcore>=3.7.0,<4.0.0",
 ]
 
 [project.optional-dependencies]
+skyrl = [
+    "skyrl>=0.0.1",
+    "skyrl-gym",
+]
 trl = [
     "peft>=0.17.0,<1.0.0", # supports LoRA for most MoE model including LLama4 family
     "trl>=0.28.0,<1.0.0"

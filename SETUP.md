@@ -15,16 +15,28 @@ Set up the Python environment. Note: Playpen requires Python 3.10+.
 ```bash
 python -m venv venv --system-site-packages && source venv/bin/activate
 ```
+If you prefer `uv`, create and activate a virtual environment with:
+```bash
+uv venv --python 3.12 && source .venv/bin/activate
+```
 
 Install the requirements, which include the [clemcore](https://github.com/clp-research/clemcore) framework and the libraries to train and evaluate Huggingface models.
 ```bash
 pip install -e .
+```
+With `uv`, use:
+```bash
+uv sync
 ```
 
 Import then the [clembench](https://github.com/clp-research/clembench) repository in a directory of your choice and install its requirements. This will make the game environments available for training and evaluation.
 ```bash
 git clone https://github.com/clp-research/clembench
 pip install -r your/path/to/clembench/requirements.txt
+```
+With `uv`, install the clembench requirements with:
+```bash
+uv pip install -r your/path/to/clembench/requirements.txt
 ```
 
 In case the _clembench_ repository ha been cloned inside of the Playpen project root, games will be discovered automatically.
@@ -44,14 +56,31 @@ To verify which games are available use:
 clem list games
 ```
 
+If you want to start RL training with SkyRL using Playpen, install the SkyRL extra.
+```bash
+pip install '.[skyrl]'
+```
+With `uv`, use:
+```bash
+uv sync --extra skyrl
+```
+
 If you are interested in running the provided training examples, you should install TRL.
 ```bash
 pip install '.[trl]'
+```
+With `uv`, use:
+```bash
+uv sync --extra trl
 ```
 
 Furthermore, if you want to run the prepared trainers in `examples/trl` with local huggingface models, you should install the `huggingface` extra. If you do not want this, you can still use the `trl` extra to run the trainers with remote models.
 ```bash
 pip install 'clemcore[huggingface]'
+```
+With `uv`, use:
+```bash
+uv pip install 'clemcore[huggingface]'
 ```
 Note: If you want to use the `transformers` library directly, you cannot use the playpen CLI to run the trainers, but you have to run your own scripts.
 
