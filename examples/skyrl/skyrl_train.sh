@@ -9,7 +9,7 @@ export WANDB_API_KEY="null"
 export WANDB_MODE="offline"
 export RAY_RUNTIME_ENV_HOOK=ray._private.runtime_env.uv_runtime_env_hook.hook
 
-DATA_DIR="./data/playpen-train"
+DATA_DIR="/disk/scratch/asuglia/playpen-train"
 NUM_GPUS=1
 
 uv run --isolated --extra skyrl -m examples.skyrl.skyrl_playpen \
