@@ -14,23 +14,9 @@ authors = [
 ]
 dependencies = [
     "clemcore>=3.7.0,<4.0.0",
-    "skyrl[skyrl]",
-]
-
-[project.optional-dependencies]
-trl = [
-    "peft>=0.17.0,<1.0.0", # supports LoRA for most MoE model including LLama4 family
-    "trl>=0.28.0,<1.0.0"
-]
-skyrl = [
-    "jaxtyping>=0.2.0",
-    "loguru>=0.7.3",
-    "ray==2.51.1",
-    "skyrl-gym>=0.3.0",
-    "skyrl>=0.0.1",
-    "torchdata>=0.11.0",
-    "flashinfer-jit-cache==0.5.3",
-    "flash-attn==2.8.3"
+    "torch>=2.10.0",
+    "flash-attn==2.8.3",
+    "skyrl[ray,skyrl-train,fsdp]",
 ]
 
 [project.scripts]
@@ -44,13 +30,23 @@ where = ["."]
 exclude = ["build", "dist", "venv", "examples", "clembench"]
 
 [tool.uv.sources]
-skyrl = { git = "https://github.com/NovaSky-AI/SkyRL" }
 flashinfer-jit-cache = { index = "flashinfer-cu128" }
+torch = { index = "pytorch-cu128" }
+skyrl = { git = "https://github.com/novasky-ai/SkyRL.git" }
 
 [tool.uv.extra-build-dependencies]
 flash-attn = [{requirement = "torch", match-runtime = true}]
+
+[tool.uv.extra-build-variables]
+flash-attn = { FLASH_ATTENTION_SKIP_CUDA_BUILD = "TRUE" }
 
 [[tool.uv.index]]
 name = "flashinfer-cu128"
 url = "https://flashinfer.ai/whl/cu128"
 explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+

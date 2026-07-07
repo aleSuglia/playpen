@@ -9,10 +9,10 @@ export WANDB_API_KEY="null"
 export WANDB_MODE="offline"
 export RAY_RUNTIME_ENV_HOOK=ray._private.runtime_env.uv_runtime_env_hook.hook
 
-DATA_DIR="/disk/scratch/asuglia/playpen-train"
+DATA_DIR="/mnt/ceph_rbd/playpen_train_data"
 NUM_GPUS=1
 
-uv run --isolated --extra skyrl -m examples.skyrl.skyrl_playpen \
+uv run -m examples.skyrl.skyrl_playpen \
   data.train_data="['$DATA_DIR/train.parquet']" \
   data.val_data="['$DATA_DIR/validation.parquet']" \
   trainer.algorithm.advantage_estimator="grpo" \
